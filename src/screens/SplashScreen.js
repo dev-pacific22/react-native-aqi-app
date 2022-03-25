@@ -1,12 +1,13 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React, {useEffect} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import SplashScreenNative from 'react-native-splash-screen';
 
 const SplashScreen = ({navigation}) => {
   useEffect(() => {
     setTimeout(() => {
+      SplashScreenNative.hide();
       navigation.navigate('HomeScreen');
-    }, 3000);
+    }, 5000);
   }, [navigation]);
 
   return (
