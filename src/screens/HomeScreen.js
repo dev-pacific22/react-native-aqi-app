@@ -1,14 +1,32 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, Button} from 'react-native';
 import React from 'react';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {buttonClickedAction} from '../redux/action/HomeAction';
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation, buttonClickedAction, message}) => {
   return (
-    <View>
-      <Text>HomeScreen</Text>
+    <View style={styles.containerStyle}>
+      <Text>{message}</Text>
+      <Button onPress={buttonClickedAction} title="Click Here" />
     </View>
   );
 };
 
-export default HomeScreen;
+const styles = StyleSheet.create({
+  containerStyle: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#69A',
+    justifyContent: 'center',
+  },
+});
 
-const styles = StyleSheet.create({});
+const mapDispatchToProps = dispatch => {
+  return bindActionCreators({buttonClickedAction}, dispatch);
+};
+
+const mapStateToProps = ({home}) => ({
+  message: home.message,
+});
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

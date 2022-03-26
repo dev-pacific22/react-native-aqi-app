@@ -1,12 +1,15 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {SafeAreaView, StyleSheet} from 'react-native';
 import AppContainer from './src/routes/Routes';
+import {Provider} from 'react-redux';
+import getStore from './src/redux';
 
+const store = getStore();
 const App = () => {
   return (
-    <React.Fragment>
+    <Provider store={store}>
       <AppContainer />
-    </React.Fragment>
+    </Provider>
   );
 };
 
