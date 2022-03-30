@@ -1,14 +1,26 @@
 import {StyleSheet, Text, View, Button} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {buttonClickedAction} from '../redux/action/HomeAction';
+import {
+  buttonClickedAction,
+  getAQIDetailsWithCity,
+} from '../redux/action/HomeAction';
 
-const HomeScreen = ({navigation, buttonClickedAction, message}) => {
+const HomeScreen = ({
+  navigation,
+  buttonClickedAction,
+  getAQIDetailsWithCity,
+  message,
+}) => {
+  const [cityName, setCityName] = useState('chicago');
   return (
     <View style={styles.containerStyle}>
       <Text>{message}</Text>
-      <Button onPress={buttonClickedAction} title="Click Here" />
+      <Button
+        onPress={() => getAQIDetailsWithCity(cityName)}
+        title="Click Here"
+      />
     </View>
   );
 };
@@ -23,7 +35,10 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({buttonClickedAction}, dispatch);
+  return bindActionCreators(
+    {buttonClickedAction, getAQIDetailsWithCity},
+    dispatch,
+  );
 };
 
 const mapStateToProps = ({home}) => ({
