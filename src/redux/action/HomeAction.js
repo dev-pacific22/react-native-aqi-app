@@ -27,6 +27,6 @@ export const getAQIDetailsWithCity = cityName => {
       false,
     );
     console.log(response);
-    dispatch({type: ON_LOADING_STOP});
+    // dispatch({type: ON_LOADING_STOP});
   };
 };

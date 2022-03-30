@@ -7,7 +7,7 @@ const SplashScreen = ({navigation}) => {
     setTimeout(() => {
       SplashScreenNative.hide();
       navigation.navigate('HomeScreen');
-    }, 5000);
+    }, 1000);
   }, [navigation]);
 
   return (
@@ -23,6 +23,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FAC',
     justifyContent: 'center',
+  },
+  spinnerTextStyle: {
+    color: '#FFF',
   },
 });
 export default SplashScreen;
