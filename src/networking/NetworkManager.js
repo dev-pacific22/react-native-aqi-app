@@ -29,12 +29,18 @@ export const getRequestApi = async (
     dispatch({type: actionLoading});
   }
   let headers = await configHeader();
-  return axios
-    .get(addTokenParam(URL), headers)
-    .then(response => {
-      dispatch({type: actionSuccess, payload: response});
-    })
-    .catch(error => {
-      dispatch({type: actionFail, payload: error.message});
-    });
+
+  const requestPromise = new Promise(async (resolve, reject) => {
+    axios
+      .get(addTokenParam(URL), headers)
+      .then(response => {
+        dispatch({type: actionSuccess, payload: response});
+        resolve(response);
+      })
+      .catch(error => {
+        dispatch({type: actionFail, payload: error.message});
+        reject(error);
+      });
+  });
+  return requestPromise;
 };
