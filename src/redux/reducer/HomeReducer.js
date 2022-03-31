@@ -21,7 +21,7 @@ export default (state = initialState, {type, payload}) => {
     case FETCH_AQI_SUCCESS:
       return {
         ...state,
-        cityData: payload?.data.data,
+        cityData: payload?.data,
         error: false,
         message: 'Successfully retrieved data.',
       };

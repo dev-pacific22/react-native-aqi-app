@@ -34,7 +34,7 @@ export const getRequestApi = async (
     axios
       .get(addTokenParam(URL), headers)
       .then(response => {
-        dispatch({type: actionSuccess, payload: response});
+        dispatch({type: actionSuccess, payload: response.data});
         resolve(response);
       })
       .catch(error => {
