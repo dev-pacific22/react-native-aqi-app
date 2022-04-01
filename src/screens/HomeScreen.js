@@ -24,7 +24,7 @@ const HomeScreen = ({
   cityData,
   error,
 }) => {
-  const [cityName, setCityName] = useState('pune');
+  const [cityName, setCityName] = useState();
 
   const onCityTextChange = text => {
     setCityName(text);
@@ -35,6 +35,7 @@ const HomeScreen = ({
   };
 
   useEffect(() => {
+    let locationSubscription = null;
     RNLocation.requestPermission({
       ios: 'whenInUse',
       android: {
@@ -42,7 +43,7 @@ const HomeScreen = ({
       },
     }).then(granted => {
       if (granted) {
-        this.locationSubscription = RNLocation.subscribeToLocationUpdates(
+        locationSubscription = RNLocation.subscribeToLocationUpdates(
           locations => {
             if (locations?.length > 0) {
               getAQIDetailsWithLocation(
@@ -54,8 +55,10 @@ const HomeScreen = ({
         );
       }
     });
-    // getAQIDetailsWithCity(cityName);
-  }, []);
+    return () => {
+      locationSubscription && locationSubscription();
+    };
+  }, [getAQIDetailsWithLocation]);
 
   return (
     <React.Fragment>
@@ -114,6 +117,23 @@ const HomeScreen = ({
                   cityData?.dominentpol?.toUpperCase() || 'N/A'
                 }`}</Text>
               </View>
+
+              <View style={[styles.infoHeaderContainer, styles.infoContainer]}>
+                <Text style={styles.infoText}>{'Source'}</Text>
+                <Text style={[styles.infoText, styles.infoValue]}>{`${
+                  cityData?.attributions[0]?.name || 'N/A'
+                }`}</Text>
+              </View>
+
+              <View style={[styles.infoHeaderContainer, styles.infoContainer]}>
+                <Text style={styles.infoText}>{'Geo-Code:'}</Text>
+                <Text
+                  style={[
+                    styles.infoText,
+                    styles.infoValue,
+                  ]}>{`${cityData?.city.geo[0]}, ${cityData?.city.geo[1]}`}</Text>
+              </View>
+
               <View style={[styles.infoHeaderContainer, styles.infoContainer]}>
                 <Text style={styles.infoText}>{'Last Updated'}</Text>
                 <Text style={[styles.infoText, styles.infoValue]}>{`${
