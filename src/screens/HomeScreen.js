@@ -2,16 +2,24 @@ import {StyleSheet, Text, View, Button} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {getAQIDetailsWithCity} from '../redux/action/HomeAction';
+import {
+  getAQIDetailsWithCity,
+  getAQIDetailsWithLocation,
+} from '../redux/action/HomeAction';
 import Spinner from 'react-native-loading-spinner-overlay';
 import {CustomCard, CustomInput} from '../components';
 import {Colors} from '../utils/Colors';
 import {getFormattedDateTimeWithTZ, getHealthStatusFromAQI} from '../utils';
+import RNLocation from 'react-native-location';
 
+RNLocation.configure({
+  distanceFilter: 100,
+});
 const HomeScreen = ({
   navigation,
   loading,
   getAQIDetailsWithCity,
+  getAQIDetailsWithLocation,
   message,
   cityData,
   error,
@@ -27,7 +35,26 @@ const HomeScreen = ({
   };
 
   useEffect(() => {
-    getAQIDetailsWithCity(cityName);
+    RNLocation.requestPermission({
+      ios: 'whenInUse',
+      android: {
+        detail: 'coarse',
+      },
+    }).then(granted => {
+      if (granted) {
+        this.locationSubscription = RNLocation.subscribeToLocationUpdates(
+          locations => {
+            if (locations?.length > 0) {
+              getAQIDetailsWithLocation(
+                locations[0].latitude,
+                locations[0].longitude,
+              );
+            }
+          },
+        );
+      }
+    });
+    // getAQIDetailsWithCity(cityName);
   }, []);
 
   return (
@@ -160,7 +187,10 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({getAQIDetailsWithCity}, dispatch);
+  return bindActionCreators(
+    {getAQIDetailsWithCity, getAQIDetailsWithLocation},
+    dispatch,
+  );
 };
 
 const mapStateToProps = ({home, app}) => ({
