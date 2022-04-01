@@ -79,70 +79,86 @@ const HomeScreen = ({
           />
           <Button onPress={onSearchPress} title="Search" />
         </View>
+        {!cityData.city ? (
+          <Text style={styles.subheader}>
+            {'No data found, please try again.'}
+          </Text>
+        ) : (
+          <View style={styles.parentInfoContainer}>
+            <Text style={styles.subheader}>{'Overview'}</Text>
+            <Text>{`Showing AQI for ${cityData.city?.name}`}</Text>
+            <CustomCard style={styles.cardStyle}>
+              <View>
+                <View style={styles.infoHeaderContainer}>
+                  <Text style={[styles.infoText, styles.subheader]}>
+                    {'Params'}
+                  </Text>
+                  <Text style={[styles.infoText, styles.subheader]}>
+                    {'Values'}
+                  </Text>
+                </View>
+                <View
+                  style={[styles.infoHeaderContainer, styles.infoContainer]}>
+                  <Text style={[styles.infoText]}>{'Status'}</Text>
+                  <Text
+                    style={[
+                      styles.infoText,
+                      styles.infoValue,
+                      {
+                        color: getHealthStatusFromAQI(cityData?.aqi || 0)
+                          ?.color,
+                      },
+                    ]}>{`${
+                    getHealthStatusFromAQI(cityData?.aqi || 0)?.status || 'N/A'
+                  }`}</Text>
+                </View>
+                <View
+                  style={[styles.infoHeaderContainer, styles.infoContainer]}>
+                  <Text style={styles.infoText}>{'AQ Index'}</Text>
+                  <Text style={[styles.infoText, styles.infoValue]}>{`${
+                    cityData.aqi || 'N/A'
+                  } - AQI`}</Text>
+                </View>
 
-        <View style={styles.parentInfoContainer}>
-          <Text style={styles.subheader}>{'Overview'}</Text>
-          <Text>{`Showing AQI for ${cityData.city?.name}`}</Text>
-          <CustomCard style={styles.cardStyle}>
-            <View>
-              <View style={styles.infoHeaderContainer}>
-                <Text style={[styles.infoText, styles.subheader]}>
-                  {'Params'}
-                </Text>
-                <Text style={[styles.infoText, styles.subheader]}>
-                  {'Values'}
-                </Text>
-              </View>
-              <View style={[styles.infoHeaderContainer, styles.infoContainer]}>
-                <Text style={[styles.infoText]}>{'Status'}</Text>
-                <Text
-                  style={[
-                    styles.infoText,
-                    styles.infoValue,
-                    {color: getHealthStatusFromAQI(cityData?.aqi || 0)?.color},
-                  ]}>{`${
-                  getHealthStatusFromAQI(cityData?.aqi || 0)?.status || 'N/A'
-                }`}</Text>
-              </View>
-              <View style={[styles.infoHeaderContainer, styles.infoContainer]}>
-                <Text style={styles.infoText}>{'AQ Index'}</Text>
-                <Text style={[styles.infoText, styles.infoValue]}>{`${
-                  cityData.aqi || 'N/A'
-                } - AQI`}</Text>
-              </View>
+                <View
+                  style={[styles.infoHeaderContainer, styles.infoContainer]}>
+                  <Text style={styles.infoText}>{'Dominant Pollutant'}</Text>
+                  <Text style={[styles.infoText, styles.infoValue]}>{`${
+                    cityData?.dominentpol?.toUpperCase() || 'N/A'
+                  }`}</Text>
+                </View>
 
-              <View style={[styles.infoHeaderContainer, styles.infoContainer]}>
-                <Text style={styles.infoText}>{'Dominant Pollutant'}</Text>
-                <Text style={[styles.infoText, styles.infoValue]}>{`${
-                  cityData?.dominentpol?.toUpperCase() || 'N/A'
-                }`}</Text>
-              </View>
+                <View
+                  style={[styles.infoHeaderContainer, styles.infoContainer]}>
+                  <Text style={styles.infoText}>{'Source'}</Text>
+                  <Text style={[styles.infoText, styles.infoValue]}>{`${
+                    cityData?.attributions?.length > 0
+                      ? cityData?.attributions[0]?.name
+                      : 'N/A'
+                  }`}</Text>
+                </View>
 
-              <View style={[styles.infoHeaderContainer, styles.infoContainer]}>
-                <Text style={styles.infoText}>{'Source'}</Text>
-                <Text style={[styles.infoText, styles.infoValue]}>{`${
-                  cityData?.attributions[0]?.name || 'N/A'
-                }`}</Text>
-              </View>
+                <View
+                  style={[styles.infoHeaderContainer, styles.infoContainer]}>
+                  <Text style={styles.infoText}>{'Geo-Code:'}</Text>
+                  <Text style={[styles.infoText, styles.infoValue]}>
+                    {cityData?.city?.geo?.length >= 1
+                      ? `${cityData?.city.geo[0]}, ${cityData?.city.geo[1]}`
+                      : `N/A`}
+                  </Text>
+                </View>
 
-              <View style={[styles.infoHeaderContainer, styles.infoContainer]}>
-                <Text style={styles.infoText}>{'Geo-Code:'}</Text>
-                <Text
-                  style={[
-                    styles.infoText,
-                    styles.infoValue,
-                  ]}>{`${cityData?.city.geo[0]}, ${cityData?.city.geo[1]}`}</Text>
+                <View
+                  style={[styles.infoHeaderContainer, styles.infoContainer]}>
+                  <Text style={styles.infoText}>{'Last Updated'}</Text>
+                  <Text style={[styles.infoText, styles.infoValue]}>{`${
+                    getFormattedDateTimeWithTZ(cityData?.time?.iso) || 'N/A'
+                  }`}</Text>
+                </View>
               </View>
-
-              <View style={[styles.infoHeaderContainer, styles.infoContainer]}>
-                <Text style={styles.infoText}>{'Last Updated'}</Text>
-                <Text style={[styles.infoText, styles.infoValue]}>{`${
-                  getFormattedDateTimeWithTZ(cityData?.time?.iso) || 'N/A'
-                }`}</Text>
-              </View>
-            </View>
-          </CustomCard>
-        </View>
+            </CustomCard>
+          </View>
+        )}
       </View>
     </React.Fragment>
   );
