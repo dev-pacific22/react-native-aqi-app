@@ -28,7 +28,7 @@ const CustomInput = props => {
         <Input
           w={{
             base: '100%',
-            md: '25%',
+            md: '20%',
           }}
           p="3"
           size="lg"
