@@ -1,12 +1,13 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React, {useEffect} from 'react';
 import SplashScreenNative from 'react-native-splash-screen';
+import {Colors} from '../utils';
 
 const SplashScreen = ({navigation}) => {
   useEffect(() => {
     setTimeout(() => {
       SplashScreenNative.hide();
-      navigation.navigate('HomeScreen');
+      navigation.replace('HomeScreen');
     }, 1000);
   }, [navigation]);
 
@@ -21,11 +22,8 @@ const styles = StyleSheet.create({
   containerStyle: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#FAC',
+    backgroundColor: Colors.success,
     justifyContent: 'center',
-  },
-  spinnerTextStyle: {
-    color: '#FFF',
   },
 });
 export default SplashScreen;

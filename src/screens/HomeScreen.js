@@ -2,21 +2,29 @@ import {StyleSheet, Text, View, Button} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {getAQIDetailsWithCity} from '../redux/action/HomeAction';
+import {
+  getAQIDetailsWithCity,
+  getAQIDetailsWithLocation,
+} from '../redux/action/HomeAction';
 import Spinner from 'react-native-loading-spinner-overlay';
 import {CustomCard, CustomInput} from '../components';
 import {Colors} from '../utils/Colors';
 import {getFormattedDateTimeWithTZ, getHealthStatusFromAQI} from '../utils';
+import RNLocation from 'react-native-location';
 
+RNLocation.configure({
+  distanceFilter: 100,
+});
 const HomeScreen = ({
   navigation,
   loading,
   getAQIDetailsWithCity,
+  getAQIDetailsWithLocation,
   message,
   cityData,
   error,
 }) => {
-  const [cityName, setCityName] = useState('pune');
+  const [cityName, setCityName] = useState();
 
   const onCityTextChange = text => {
     setCityName(text);
@@ -27,8 +35,30 @@ const HomeScreen = ({
   };
 
   useEffect(() => {
-    getAQIDetailsWithCity(cityName);
-  }, []);
+    let locationSubscription = null;
+    RNLocation.requestPermission({
+      ios: 'whenInUse',
+      android: {
+        detail: 'coarse',
+      },
+    }).then(granted => {
+      if (granted) {
+        locationSubscription = RNLocation.subscribeToLocationUpdates(
+          locations => {
+            if (locations?.length > 0) {
+              getAQIDetailsWithLocation(
+                locations[0].latitude,
+                locations[0].longitude,
+              );
+            }
+          },
+        );
+      }
+    });
+    return () => {
+      locationSubscription && locationSubscription();
+    };
+  }, [getAQIDetailsWithLocation]);
 
   return (
     <React.Fragment>
@@ -87,6 +117,23 @@ const HomeScreen = ({
                   cityData?.dominentpol?.toUpperCase() || 'N/A'
                 }`}</Text>
               </View>
+
+              <View style={[styles.infoHeaderContainer, styles.infoContainer]}>
+                <Text style={styles.infoText}>{'Source'}</Text>
+                <Text style={[styles.infoText, styles.infoValue]}>{`${
+                  cityData?.attributions[0]?.name || 'N/A'
+                }`}</Text>
+              </View>
+
+              <View style={[styles.infoHeaderContainer, styles.infoContainer]}>
+                <Text style={styles.infoText}>{'Geo-Code:'}</Text>
+                <Text
+                  style={[
+                    styles.infoText,
+                    styles.infoValue,
+                  ]}>{`${cityData?.city.geo[0]}, ${cityData?.city.geo[1]}`}</Text>
+              </View>
+
               <View style={[styles.infoHeaderContainer, styles.infoContainer]}>
                 <Text style={styles.infoText}>{'Last Updated'}</Text>
                 <Text style={[styles.infoText, styles.infoValue]}>{`${
@@ -160,7 +207,10 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({getAQIDetailsWithCity}, dispatch);
+  return bindActionCreators(
+    {getAQIDetailsWithCity, getAQIDetailsWithLocation},
+    dispatch,
+  );
 };
 
 const mapStateToProps = ({home, app}) => ({
