@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, Image} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -12,6 +12,7 @@ import {Colors} from '../utils/Colors';
 import {getFormattedDateTimeWithTZ, getHealthStatusFromAQI} from '../utils';
 import GetLocation from 'react-native-get-location';
 import {useToast} from 'native-base';
+import {assets} from '../assets';
 
 const HomeScreen = ({
   navigation,
@@ -65,6 +66,15 @@ const HomeScreen = ({
       />
 
       <View style={styles.containerStyle}>
+        <View style={styles.logoContainer}>
+          <Image
+            resizeMode="contain"
+            source={assets.app_logo}
+            style={styles.logoStyle}
+          />
+          <Text style={styles.logoTextStyle}> {'AQI-Index'}</Text>
+        </View>
+        <View style={styles.separator} />
         <View style={styles.inputContainer}>
           <CustomInput
             name="city"
@@ -75,6 +85,7 @@ const HomeScreen = ({
           />
           <CustomButton onPress={onSearchPress} title="Search" />
         </View>
+        <View style={styles.separator} />
         {!cityData.city ? (
           <Text style={styles.subheader}>
             {'No data found, please try again.'}
@@ -177,6 +188,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    marginVertical: 8,
   },
   parentInfoContainer: {
     width: '90%',
@@ -234,6 +246,27 @@ const styles = StyleSheet.create({
     color: Colors.info,
     fontSize: 14,
     fontWeight: '500',
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    alignSelf: 'flex-start',
+    marginHorizontal: 16,
+  },
+  logoStyle: {
+    height: 60,
+    width: 80,
+  },
+  logoTextStyle: {
+    color: Colors.primary,
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  separator: {
+    width: '100%',
+    height: 2,
+    backgroundColor: Colors.secondaryTextColor,
   },
 });
 
