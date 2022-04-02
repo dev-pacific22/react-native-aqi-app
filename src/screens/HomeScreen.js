@@ -1,5 +1,5 @@
-import {StyleSheet, Text, View, Image} from 'react-native';
 import React, {useState, useEffect} from 'react';
+import {StyleSheet, Text, View, Image} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {
@@ -51,11 +51,11 @@ const HomeScreen = ({
         getAQIDetailsWithLocation(latitude, longitude);
       })
       .catch(err => {
-        //TODO: Add fallback if
         const {code, errMessage} = err;
         console.warn(code, errMessage);
+        getAQIDetailsWithCity('here'); // 'here' will give the details from users ip address.
       });
-  }, [getAQIDetailsWithLocation]);
+  }, [getAQIDetailsWithLocation, getAQIDetailsWithCity]);
 
   return (
     <React.Fragment>
@@ -94,7 +94,7 @@ const HomeScreen = ({
           <View style={styles.parentInfoContainer}>
             <Text style={styles.subheader}>{'Overview'}</Text>
             <View style={styles.headerContentContainer}>
-              <Text style={[styles.headerText]}>{`Showing AQI for: `}</Text>
+              <Text style={[styles.headerText]}>{'Showing AQI for: '}</Text>
               <Text style={[styles.cityDetailText]}>{cityData.city?.name}</Text>
             </View>
             <CustomCard style={styles.cardStyle}>
@@ -154,7 +154,7 @@ const HomeScreen = ({
                   <Text style={[styles.infoText, styles.infoValue]}>
                     {cityData?.city?.geo?.length >= 1
                       ? `${cityData?.city.geo[0]}, ${cityData?.city.geo[1]}`
-                      : `N/A`}
+                      : 'N/A'}
                   </Text>
                 </View>
 
