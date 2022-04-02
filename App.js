@@ -5,6 +5,8 @@ import {Provider} from 'react-redux';
 import getStore from './src/redux';
 import {Colors} from './src/utils/Colors';
 import {NativeBaseProvider} from 'native-base';
+import {LogBox} from 'react-native';
+LogBox.ignoreLogs(['new NativeEventEmitter']);
 
 const store = getStore();
 const App = () => {

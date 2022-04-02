@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View, Button} from 'react-native';
+import {StyleSheet, Text, View, Button, Alert} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -10,11 +10,8 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import {CustomCard, CustomInput} from '../components';
 import {Colors} from '../utils/Colors';
 import {getFormattedDateTimeWithTZ, getHealthStatusFromAQI} from '../utils';
-import RNLocation from 'react-native-location';
+import GetLocation from 'react-native-get-location';
 
-RNLocation.configure({
-  distanceFilter: 100,
-});
 const HomeScreen = ({
   navigation,
   loading,
@@ -35,29 +32,19 @@ const HomeScreen = ({
   };
 
   useEffect(() => {
-    let locationSubscription = null;
-    RNLocation.requestPermission({
-      ios: 'whenInUse',
-      android: {
-        detail: 'coarse',
-      },
-    }).then(granted => {
-      if (granted) {
-        locationSubscription = RNLocation.subscribeToLocationUpdates(
-          locations => {
-            if (locations?.length > 0) {
-              getAQIDetailsWithLocation(
-                locations[0].latitude,
-                locations[0].longitude,
-              );
-            }
-          },
-        );
-      }
-    });
-    return () => {
-      locationSubscription && locationSubscription();
-    };
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 15000,
+    })
+      .then(location => {
+        const {latitude, longitude} = location;
+        getAQIDetailsWithLocation(latitude, longitude);
+      })
+      .catch(err => {
+        //TODO: Add fallback if
+        const {code, errMessage} = err;
+        console.warn(code, errMessage);
+      });
   }, [getAQIDetailsWithLocation]);
 
   return (
