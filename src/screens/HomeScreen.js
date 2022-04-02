@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View, Button, Alert} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -7,28 +7,37 @@ import {
   getAQIDetailsWithLocation,
 } from '../redux/action/HomeAction';
 import Spinner from 'react-native-loading-spinner-overlay';
-import {CustomCard, CustomInput} from '../components';
+import {CustomCard, CustomInput, CustomButton} from '../components';
 import {Colors} from '../utils/Colors';
 import {getFormattedDateTimeWithTZ, getHealthStatusFromAQI} from '../utils';
 import GetLocation from 'react-native-get-location';
+import {useToast} from 'native-base';
 
 const HomeScreen = ({
   navigation,
   loading,
   getAQIDetailsWithCity,
   getAQIDetailsWithLocation,
-  message,
   cityData,
-  error,
 }) => {
   const [cityName, setCityName] = useState();
+  const toast = useToast();
 
   const onCityTextChange = text => {
     setCityName(text);
   };
 
-  const onSearchPress = () => {
-    getAQIDetailsWithCity(cityName);
+  const onSearchPress = async () => {
+    if (cityName?.length > 0) {
+      getAQIDetailsWithCity(cityName);
+    } else {
+      toast.show({
+        duration: 4000,
+        title: 'Error',
+        status: 'error',
+        description: 'Please enter valid city name.',
+      });
+    }
   };
 
   useEffect(() => {
@@ -64,7 +73,7 @@ const HomeScreen = ({
             placeholder={'Enter City Name'}
             onTex
           />
-          <Button onPress={onSearchPress} title="Search" />
+          <CustomButton onPress={onSearchPress} title="Search" />
         </View>
         {!cityData.city ? (
           <Text style={styles.subheader}>
@@ -73,7 +82,10 @@ const HomeScreen = ({
         ) : (
           <View style={styles.parentInfoContainer}>
             <Text style={styles.subheader}>{'Overview'}</Text>
-            <Text>{`Showing AQI for ${cityData.city?.name}`}</Text>
+            <View style={styles.headerContentContainer}>
+              <Text style={[styles.headerText]}>{`Showing AQI for: `}</Text>
+              <Text style={[styles.cityDetailText]}>{cityData.city?.name}</Text>
+            </View>
             <CustomCard style={styles.cardStyle}>
               <View>
                 <View style={styles.infoHeaderContainer}>
@@ -170,6 +182,22 @@ const styles = StyleSheet.create({
     width: '90%',
     marginHorizontal: 16,
     marginVertical: 16,
+  },
+  headerContentContainer: {
+    width: '66%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 5,
+  },
+  headerText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.darkGrey,
+  },
+  cityDetailText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.primaryTextColor,
   },
   cardStyle: {
     width: '100%',
