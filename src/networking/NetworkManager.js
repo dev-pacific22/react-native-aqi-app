@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {Config} from '../config/config';
 import {API_TIME_OUT} from '../utils/Constant';
 
 const configHeader = async (token = '') => {
@@ -14,9 +15,8 @@ const configHeader = async (token = '') => {
 
 const addTokenParam = URL => {
   //TODO: Add token to separate config file with envs, add config to gitignore.
-  return `${URL}?token=0a61ddb7c37a489429cf59499d92aa983b2f8cc2`;
+  return `${URL}?token=${Config.API_TOKEN}`;
 };
-
 export const getRequestApi = async (
   URL,
   dispatch,
