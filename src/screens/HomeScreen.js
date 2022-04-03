@@ -1,5 +1,5 @@
-import {StyleSheet, Text, View, Button} from 'react-native';
 import React, {useState, useEffect} from 'react';
+import {StyleSheet, Text, View, Image} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {
@@ -7,58 +7,55 @@ import {
   getAQIDetailsWithLocation,
 } from '../redux/action/HomeAction';
 import Spinner from 'react-native-loading-spinner-overlay';
-import {CustomCard, CustomInput} from '../components';
+import {CustomCard, CustomInput, CustomButton} from '../components';
 import {Colors} from '../utils/Colors';
 import {getFormattedDateTimeWithTZ, getHealthStatusFromAQI} from '../utils';
-import RNLocation from 'react-native-location';
+import GetLocation from 'react-native-get-location';
+import {useToast} from 'native-base';
+import {assets} from '../assets';
 
-RNLocation.configure({
-  distanceFilter: 100,
-});
 const HomeScreen = ({
   navigation,
   loading,
   getAQIDetailsWithCity,
   getAQIDetailsWithLocation,
-  message,
   cityData,
-  error,
 }) => {
   const [cityName, setCityName] = useState();
+  const toast = useToast();
 
   const onCityTextChange = text => {
     setCityName(text);
   };
 
-  const onSearchPress = () => {
-    getAQIDetailsWithCity(cityName);
+  const onSearchPress = async () => {
+    if (cityName?.length > 0) {
+      getAQIDetailsWithCity(cityName);
+    } else {
+      toast.show({
+        duration: 4000,
+        title: 'Error',
+        status: 'error',
+        description: 'Please enter valid city name.',
+      });
+    }
   };
 
   useEffect(() => {
-    let locationSubscription = null;
-    RNLocation.requestPermission({
-      ios: 'whenInUse',
-      android: {
-        detail: 'coarse',
-      },
-    }).then(granted => {
-      if (granted) {
-        locationSubscription = RNLocation.subscribeToLocationUpdates(
-          locations => {
-            if (locations?.length > 0) {
-              getAQIDetailsWithLocation(
-                locations[0].latitude,
-                locations[0].longitude,
-              );
-            }
-          },
-        );
-      }
-    });
-    return () => {
-      locationSubscription && locationSubscription();
-    };
-  }, [getAQIDetailsWithLocation]);
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 15000,
+    })
+      .then(location => {
+        const {latitude, longitude} = location;
+        getAQIDetailsWithLocation(latitude, longitude);
+      })
+      .catch(err => {
+        const {code, errMessage} = err;
+        console.warn(code, errMessage);
+        getAQIDetailsWithCity('here'); // 'here' will give the details from users ip address.
+      });
+  }, [getAQIDetailsWithLocation, getAQIDetailsWithCity]);
 
   return (
     <React.Fragment>
@@ -69,6 +66,15 @@ const HomeScreen = ({
       />
 
       <View style={styles.containerStyle}>
+        <View style={styles.logoContainer}>
+          <Image
+            resizeMode="contain"
+            source={assets.app_logo}
+            style={styles.logoStyle}
+          />
+          <Text style={styles.logoTextStyle}> {'AQI-Index'}</Text>
+        </View>
+        <View style={styles.separator} />
         <View style={styles.inputContainer}>
           <CustomInput
             name="city"
@@ -77,8 +83,9 @@ const HomeScreen = ({
             placeholder={'Enter City Name'}
             onTex
           />
-          <Button onPress={onSearchPress} title="Search" />
+          <CustomButton onPress={onSearchPress} title="Search" />
         </View>
+        <View style={styles.separator} />
         {!cityData.city ? (
           <Text style={styles.subheader}>
             {'No data found, please try again.'}
@@ -86,7 +93,10 @@ const HomeScreen = ({
         ) : (
           <View style={styles.parentInfoContainer}>
             <Text style={styles.subheader}>{'Overview'}</Text>
-            <Text>{`Showing AQI for ${cityData.city?.name}`}</Text>
+            <View style={styles.headerContentContainer}>
+              <Text style={[styles.headerText]}>{'Showing AQI for: '}</Text>
+              <Text style={[styles.cityDetailText]}>{cityData.city?.name}</Text>
+            </View>
             <CustomCard style={styles.cardStyle}>
               <View>
                 <View style={styles.infoHeaderContainer}>
@@ -144,7 +154,7 @@ const HomeScreen = ({
                   <Text style={[styles.infoText, styles.infoValue]}>
                     {cityData?.city?.geo?.length >= 1
                       ? `${cityData?.city.geo[0]}, ${cityData?.city.geo[1]}`
-                      : `N/A`}
+                      : 'N/A'}
                   </Text>
                 </View>
 
@@ -178,11 +188,28 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    marginVertical: 8,
   },
   parentInfoContainer: {
     width: '90%',
     marginHorizontal: 16,
     marginVertical: 16,
+  },
+  headerContentContainer: {
+    width: '66%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 5,
+  },
+  headerText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.darkGrey,
+  },
+  cityDetailText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.primaryTextColor,
   },
   cardStyle: {
     width: '100%',
@@ -219,6 +246,27 @@ const styles = StyleSheet.create({
     color: Colors.info,
     fontSize: 14,
     fontWeight: '500',
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    alignSelf: 'flex-start',
+    marginHorizontal: 16,
+  },
+  logoStyle: {
+    height: 60,
+    width: 80,
+  },
+  logoTextStyle: {
+    color: Colors.primary,
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  separator: {
+    width: '100%',
+    height: 2,
+    backgroundColor: Colors.secondaryTextColor,
   },
 });
 

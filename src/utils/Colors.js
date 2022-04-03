@@ -1,9 +1,9 @@
 export const Colors = {
-  primary: '#1282E4',
+  primary: '#03A2FA',
   secondary: '#EF8224',
   white: '#FFF',
   lightGrey: '#ECEDEC',
-  darkGrey: '#424242',
+  darkGrey: '#727472',
   black: '#000',
   pageBackground: '#EDEDED',
   primaryTextColor: '#424242',

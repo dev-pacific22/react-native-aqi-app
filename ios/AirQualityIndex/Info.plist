@@ -51,6 +51,8 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We would like to get your location to show you AQI Details</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
