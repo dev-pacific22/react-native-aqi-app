@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {Config} from '../config/config';
+import {Config} from '../config/Config';
 import {API_TIME_OUT} from '../utils/Constant';
 
 const configHeader = async (token = '') => {
@@ -29,18 +29,12 @@ export const getRequestApi = async (
     dispatch({type: actionLoading});
   }
   let headers = await configHeader();
-
-  const requestPromise = new Promise(async (resolve, reject) => {
-    axios
-      .get(addTokenParam(URL), headers)
-      .then(response => {
-        dispatch({type: actionSuccess, payload: response.data});
-        resolve(response);
-      })
-      .catch(error => {
-        dispatch({type: actionFail, payload: error.message});
-        reject(error);
-      });
-  });
-  return requestPromise;
+  try {
+    const response = await axios.get(addTokenParam(URL), headers);
+    dispatch({type: actionSuccess, payload: response.data});
+    return response;
+  } catch (error) {
+    dispatch({type: actionFail, payload: error.message});
+    return error;
+  }
 };

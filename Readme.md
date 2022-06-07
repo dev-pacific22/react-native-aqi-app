@@ -1,5 +1,12 @@
 # React-Native-AQI-App
-A iOS and Android mobile app using React Native and Redux for getting the Air Quality index.
+
+A iOS and Android mobile app using React Native and Redux for getting the Air Quality index from the various cities in the all over the world.
+
+## Screenshots
+
+| Splash Screen    | Home Screen     |
+|------------|-------------|
+| <img src="./screenshots/splash-screen.png?raw=true" width=300 height=600 /> | <img src="./screenshots/home-screen.png?raw=true" width=300 height= 600/>  |
 
 ## API Setup
 
@@ -31,7 +38,6 @@ For more details please have a look at [Getting Started with React Native](https
 
 ## Get Started
 
-
 #### 1. Installation
 
 On the command prompt run the following commands
@@ -44,7 +50,9 @@ $ cd react-native-aqi-app/
 $ npm install or yarn
 
 ```
+
 #### 2. Simulate for iOS
+
 ```sh
 $ cd ios && pod install
 ```
